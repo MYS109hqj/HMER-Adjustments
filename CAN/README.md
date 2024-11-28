@@ -44,4 +44,4 @@ def __getitem__(self, idx):
 ```
 另外，由于输入数据的维度(channel)以及字符集的规模有所不同，在config中也要进行对应修改。需要修改encoder的input_channel（为3）以及counting_decoder的out_channel（为415）。另外需要在config中加上word_num为字符字典的大小(为415)。
 
-可以直接复制三个修改后的文件，到官方CAN模型代码中进行覆盖。
+可以直接复制三个修改后的文件，到官方CAN模型代码中进行覆盖。请务必将image_path和eval_path改成实际环境中.npy所处的测试集和训练集文件夹。
