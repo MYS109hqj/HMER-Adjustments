@@ -149,7 +149,7 @@ class Encoder(pl.LightningModule):
         super().__init__()
 
         self.model = DenseNet(growth_rate=growth_rate, num_layers=num_layers)
-
+        # 对特征进行 通道数压缩或扩展，将 DenseNet 得到的多通道特征映射到合适的维度
         self.feature_proj = nn.Conv2d(
             self.model.out_channels, d_model, kernel_size=1)
 
@@ -178,12 +178,13 @@ class Encoder(pl.LightningModule):
         feature, mask = self.model(img, img_mask)
         feature = self.feature_proj(feature)
 
-        # proj
+        # proj # rearrange 用于对张量的维度进行重新排列。将通道数从第二个维度移动到最后一个维度
         feature = rearrange(feature, "b d h w -> b h w d")
 
-        # positional encoding
-        feature = self.pos_enc_2d(feature, mask)
-        feature = self.norm(feature)
+        # positional encoding 
+        # # 卷积神经网络（如 DenseNet）通常不直接考虑空间信息的顺序，而位置编码是用于注入空间信息（例如，图像中各个位置的相对关系）
+        feature = self.pos_enc_2d(feature, mask)  # 对特征进行 位置编码
+        feature = self.norm(feature)  # 对样本的特征进行标准化处理
 
         # flat to 1-D
         return feature, mask

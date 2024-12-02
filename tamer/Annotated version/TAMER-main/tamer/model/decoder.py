@@ -164,11 +164,11 @@ class Decoder(DecodeModel):
         _, l = tgt.size()
         tgt_mask = self._build_attention_mask(l)
         tgt_pad_mask = tgt == vocab.PAD_IDX
-
+        # 输入预处理
         tgt = self.word_embed(tgt)  # [b, l, d]
         tgt = self.pos_enc(tgt)  # [b, l, d]
         tgt = self.norm(tgt)
-
+        # 调整形状，以符合transformer的输入
         h = src.shape[1]
         src = rearrange(src, "b h w d -> (h w) b d")
         src_mask = rearrange(src_mask, "b h w -> b (h w)")
@@ -182,10 +182,11 @@ class Decoder(DecodeModel):
             tgt_key_padding_mask=tgt_pad_mask,
             memory_key_padding_mask=src_mask,
         )
-
+        # 计算结构相似度，帮助解码器更好地理解生成序列中的结构信息
         sim = self.struct_sim(out, tgt_pad_mask)
-
+        # 重新排列输出的维度，使其适应后续的线性层
         out = rearrange(out, "l b d -> b l d")
+        # 通过一个线性变换将解码器的输出映射到词汇表大小，即得到每个时间步的预测结果
         out = self.proj(out)
 
         return out, sim
