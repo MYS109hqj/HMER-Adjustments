@@ -76,18 +76,6 @@ def data_iterator(
 
 
 def extract_data(folder: str, dir_name: str) -> Data:
-    """Extract data from .npy files in the specified folder."""
-    npy_files = [f for f in os.listdir(os.path.join(folder, dir_name)) if f.endswith('.npy')]
-    data = []
-    for npy_file in npy_files:
-        file_data = np.load(os.path.join(folder, dir_name, npy_file), allow_pickle=True)
-        for sample in file_data:
-            img_name = sample['ID']
-            image = sample['image']  # NumPy array
-            label = sample['label']  # Symbol string
-            data.append((img_name, image, list(label)))
-    print(f"Extracted data from: {dir_name}, total samples: {len(data)}")
-    return data
     """Extract all data need for a dataset from zip archive
 
     Args:
